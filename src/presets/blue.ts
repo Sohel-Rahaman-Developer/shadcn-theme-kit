@@ -1,0 +1,55 @@
+/**
+ * shadcn-theme-kit - Blue Preset
+ *
+ * Professional blue color scheme.
+ * Author: Sohel Rahaman
+ */
+
+import type { ThemeConfig } from "../core/types";
+
+export const bluePreset: ThemeConfig = Object.freeze({
+  name: "blue",
+  light: Object.freeze({
+    background: "#ffffff",
+    foreground: "#0f172a",
+    card: "#ffffff",
+    cardForeground: "#0f172a",
+    popover: "#ffffff",
+    popoverForeground: "#0f172a",
+    primary: "#2563eb",
+    primaryForeground: "#ffffff",
+    secondary: "#f1f5f9",
+    secondaryForeground: "#0f172a",
+    muted: "#f1f5f9",
+    mutedForeground: "#64748b",
+    accent: "#f1f5f9",
+    accentForeground: "#0f172a",
+    destructive: "#ef4444",
+    destructiveForeground: "#ffffff",
+    border: "#e2e8f0",
+    input: "#e2e8f0",
+    ring: "#2563eb",
+  }),
+  dark: Object.freeze({
+    background: "#0f172a",
+    foreground: "#f8fafc",
+    card: "#0f172a",
+    cardForeground: "#f8fafc",
+    popover: "#0f172a",
+    popoverForeground: "#f8fafc",
+    primary: "#3b82f6",
+    primaryForeground: "#ffffff",
+    secondary: "#1e293b",
+    secondaryForeground: "#f8fafc",
+    muted: "#1e293b",
+    mutedForeground: "#94a3b8",
+    accent: "#1e293b",
+    accentForeground: "#f8fafc",
+    destructive: "#dc2626",
+    destructiveForeground: "#ffffff",
+    border: "#1e293b",
+    input: "#1e293b",
+    ring: "#3b82f6",
+  }),
+  radius: "0.5rem",
+});

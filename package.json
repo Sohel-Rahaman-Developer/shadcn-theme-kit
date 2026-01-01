@@ -1,0 +1,81 @@
+{
+  "name": "shadcn-theme-kit",
+  "version": "1.0.0",
+  "description": "Easy theme configuration for React + shadcn with light/dark mode, preset themes, and CSS variables",
+  "author": "Sohel Rahaman",
+  "license": "MIT",
+  "keywords": [
+    "shadcn",
+    "theme",
+    "react",
+    "tailwind",
+    "dark-mode",
+    "light-mode",
+    "css-variables",
+    "theming",
+    "color-scheme",
+    "ui"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sohel-Rahaman-Developer/shadcn-theme-kit.git"
+  },
+  "homepage": "https://github.com/Sohel-Rahaman-Developer/shadcn-theme-kit#readme",
+  "bugs": {
+    "url": "https://github.com/Sohel-Rahaman-Developer/shadcn-theme-kit/issues"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.mjs",
+      "require": "./dist/core/index.js"
+    },
+    "./presets": {
+      "types": "./dist/presets/index.d.ts",
+      "import": "./dist/presets/index.mjs",
+      "require": "./dist/presets/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.mjs",
+      "require": "./dist/react/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run type-check && npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/react": "^18.2.0",
+    "react": "^18.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
