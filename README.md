@@ -12,7 +12,170 @@ Easy theme configuration for React + shadcn with light/dark mode, preset themes,
 - 💾 **Persistence** - localStorage saves user preference
 - 🔒 **Zero Dependencies** - Core has no runtime dependencies
 - 📦 **TypeScript First** - Full strict mode support
-- ⚡ **shadcn Compatible** - CSS variables match shadcn/ui
+
+---
+
+## Why Use shadcn-theme-kit?
+
+| Problem                                           | Solution                               |
+| ------------------------------------------------- | -------------------------------------- |
+| ❌ Manually editing `globals.css` for every color | ✅ Just pick a preset or define once   |
+| ❌ Writing separate dark mode CSS                 | ✅ Light + Dark built into every theme |
+| ❌ No persistence - user has to choose every time | ✅ Auto-saved to localStorage          |
+| ❌ Complex setup with CSS variables               | ✅ 3 lines of code to get started      |
+| ❌ Theme switching requires page reload           | ✅ Instant switch, no reload           |
+
+### Before (Manual Way) 😫
+
+```css
+/* globals.css - You had to write ALL this manually */
+:root {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --primary: #2563eb;
+  /* ... 15+ more variables */
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --primary: #3b82f6;
+  /* ... 15+ more variables AGAIN */
+}
+```
+
+### After (With shadcn-theme-kit) 😎
+
+```tsx
+// Just 3 lines!
+<ThemeProvider theme={presets.blue}>
+  <App />
+</ThemeProvider>
+```
+
+---
+
+## How CSS Classes Work
+
+### Available CSS Classes
+
+These classes work automatically once you wrap your app:
+
+| Class                   | Description         | Light Mode | Dark Mode    |
+| ----------------------- | ------------------- | ---------- | ------------ |
+| `bg-background`         | Main background     | White      | Dark         |
+| `bg-foreground`         | Inverted background | Dark       | White        |
+| `bg-primary`            | Primary brand color | Blue       | Lighter blue |
+| `bg-secondary`          | Secondary color     | Light gray | Dark gray    |
+| `bg-muted`              | Muted sections      | Light gray | Dark gray    |
+| `bg-accent`             | Accent areas        | Light gray | Dark gray    |
+| `bg-destructive`        | Error/danger        | Red        | Red          |
+| `bg-card`               | Card background     | White      | Dark         |
+| `text-foreground`       | Main text           | Dark       | White        |
+| `text-primary`          | Primary text        | Blue       | Blue         |
+| `text-muted-foreground` | Muted text          | Gray       | Lighter gray |
+| `border-border`         | Borders             | Light gray | Dark gray    |
+
+### Example: Same Class, Different Modes
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  className="bg-primary text-primary-foreground"            │
+│                                                             │
+│  ┌─────────────────────┐    ┌─────────────────────┐        │
+│  │   🌞 LIGHT MODE     │    │   🌙 DARK MODE      │        │
+│  │                     │    │                     │        │
+│  │   bg: #2563eb       │    │   bg: #3b82f6       │        │
+│  │   text: #ffffff     │    │   text: #ffffff     │        │
+│  │                     │    │                     │        │
+│  │   ┌─────────────┐   │    │   ┌─────────────┐   │        │
+│  │   │   Button    │   │    │   │   Button    │   │        │
+│  │   └─────────────┘   │    │   └─────────────┘   │        │
+│  └─────────────────────┘    └─────────────────────┘        │
+│                                                             │
+│  SAME CLASS → DIFFERENT COLORS based on mode!              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Code Example
+
+```tsx
+// This button looks different in light vs dark mode automatically!
+<button className="bg-primary text-primary-foreground px-4 py-2 rounded">
+  Click Me
+</button>
+
+// Light mode: Blue background (#2563eb) + White text
+// Dark mode:  Lighter blue (#3b82f6) + White text
+```
+
+---
+
+## Adding Custom CSS Classes
+
+Want to add your own classes that respect light/dark mode? Easy!
+
+### Method 1: Use CSS Variables in Your CSS
+
+```css
+/* styles/custom.css */
+
+.my-custom-button {
+  /* Uses theme colors automatically! */
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: 1px solid var(--border);
+}
+
+.my-custom-button:hover {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.my-custom-card {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+```
+
+### Method 2: Tailwind with Theme Variables
+
+```tsx
+// If using Tailwind, these work automatically:
+<div className="bg-[var(--primary)] text-[var(--primary-foreground)]">
+  Custom styled div
+</div>
+```
+
+### All Available CSS Variables
+
+```css
+/* These are injected into :root by ThemeProvider */
+:root {
+  --background: ...;
+  --foreground: ...;
+  --card: ...;
+  --card-foreground: ...;
+  --popover: ...;
+  --popover-foreground: ...;
+  --primary: ...;
+  --primary-foreground: ...;
+  --secondary: ...;
+  --secondary-foreground: ...;
+  --muted: ...;
+  --muted-foreground: ...;
+  --accent: ...;
+  --accent-foreground: ...;
+  --destructive: ...;
+  --destructive-foreground: ...;
+  --border: ...;
+  --input: ...;
+  --ring: ...;
+  --radius: ...;
+}
+```
 
 ---
 
