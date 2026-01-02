@@ -1,6 +1,6 @@
 {
   "name": "shadcn-theme-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Easy theme configuration for React + shadcn with light/dark mode, preset themes, and CSS variables",
   "author": "Sohel Rahaman",
   "license": "MIT",
