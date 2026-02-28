@@ -12,7 +12,7 @@
  */
 const SAFE_COLOR_NAMES: readonly string[] = Object.freeze([
   "transparent",
-  "currentColor",
+  "currentcolor",
   "inherit",
   "black",
   "white",

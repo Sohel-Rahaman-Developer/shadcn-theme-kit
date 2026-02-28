@@ -3,6 +3,7 @@
 Easy theme configuration for React + shadcn with light/dark mode, preset themes, and CSS variables.
 
 [![npm version](https://img.shields.io/npm/v/shadcn-theme-kit.svg)](https://www.npmjs.com/package/shadcn-theme-kit)
+[![Tests & CI](https://github.com/Sohel-Rahaman-Developer/shadcn-theme-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Sohel-Rahaman-Developer/shadcn-theme-kit/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
@@ -273,7 +274,7 @@ Each preset has **BOTH light mode AND dark mode** colors built-in!
 | `presets.emerald` | 💚 Green      | ✅         | ✅        |
 | `presets.orange`  | 🧡 Orange     | ✅         | ✅        |
 | `presets.violet`  | 💜 Purple     | ✅         | ✅        |
-| `presets.slate`   | 🩶 Slate gray  | ✅         | ✅        |
+| `presets.slate`   | 🩶 Slate gray | ✅         | ✅        |
 
 ### Example: Blue Theme
 
