@@ -250,7 +250,7 @@ Update your Root Layout to read the saved theme from cookies, set the `data-them
 ```tsx
 // app/layout.tsx
 import { cookies } from "next/headers";
-import { ThemeScript } from "shadcn-theme-kit";
+import { ThemeScript } from "shadcn-theme-kit/ThemeScript";
 import { getThemeFromCookies } from "shadcn-theme-kit/cookies";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
