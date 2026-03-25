@@ -14,30 +14,46 @@ const DEFAULT_KEY = "shadcn-theme-kit";
 
 /**
  * Safely parse cookies (Server or Client)
+ * Supports both raw cookie strings (document.cookie/headers)
+ * and Next.js 13+ cookies() objects.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getThemeFromCookies(
-  cookieString?: string,
+  cookieData?: string | any,
   storageKey = DEFAULT_KEY
 ) {
-  if (!cookieString) return { mode: null, theme: null };
+  if (!cookieData) return { mode: null, theme: null };
 
-  const cookies = cookieString.split(";").reduce(
-    (acc, curr) => {
-      const parts = curr.trim().split("=");
-      const key = parts[0];
-      const val = parts[1];
-      if (key) {
-        acc[key] = val ?? "";
-      }
-      return acc;
-    },
-    {} as Record<string, string>
-  );
+  // 1. Next.js 13/14/15/16 cookies() object (has .get() method)
+  if (typeof cookieData.get === "function") {
+    const modeObj = cookieData.get(`${storageKey}-mode`);
+    const themeObj = cookieData.get(`${storageKey}-theme`);
+    return {
+      mode: (modeObj?.value || null) as ThemeMode | null,
+      theme: themeObj?.value || null,
+    };
+  }
 
-  return {
-    mode: cookies[`${storageKey}-mode`] as ThemeMode | undefined,
-    theme: cookies[`${storageKey}-theme`],
-  };
+  // 2. Raw cookie string
+  if (typeof cookieData === "string") {
+    const cookies = cookieData.split(";").reduce(
+      (acc, curr) => {
+        const parts = curr.trim().split("=");
+        const key = parts[0];
+        const val = parts[1];
+        if (key) acc[key] = val ?? "";
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+
+    return {
+      mode: (cookies[`${storageKey}-mode`] || null) as ThemeMode | null,
+      theme: cookies[`${storageKey}-theme`] || null,
+    };
+  }
+
+  return { mode: null, theme: null };
 }
 
 /**
