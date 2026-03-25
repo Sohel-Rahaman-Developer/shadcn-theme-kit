@@ -6,6 +6,8 @@ export default defineConfig({
     "core/index": "src/core/index.ts",
     "presets/index": "src/presets/index.ts",
     "react/index": "src/react/index.tsx",
+    ThemeScript: "src/react/theme-script.tsx",
+    "utils/cookies": "src/utils/cookies.ts",
   },
   format: ["cjs", "esm"],
   dts: true,

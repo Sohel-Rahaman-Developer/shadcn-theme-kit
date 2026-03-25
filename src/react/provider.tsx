@@ -7,7 +7,14 @@
 
 "use client";
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { ThemeContext } from "./context";
 import type {
   ThemeConfig,
@@ -16,17 +23,14 @@ import type {
   ThemeProviderProps,
   ThemeContextValue,
 } from "../core/types";
-import {
-  generateDualModeCSS,
-  injectCSS,
-  removeCSS,
-} from "../core/css-generator";
+import {} from "../core/css-generator";
 import {
   getPersistedMode,
   setPersistedMode,
   getPersistedTheme,
   setPersistedTheme,
 } from "../utils/storage";
+import { setThemeCookies } from "../utils/cookies";
 import { presets } from "../presets";
 
 /**
@@ -57,57 +61,54 @@ function resolveMode(mode: ThemeMode): ResolvedMode {
 /**
  * Apply dark class to document
  */
+// Only touches DOM if state differs — prevents undoing ThemeScript's work
 function applyDarkClass(resolved: ResolvedMode): void {
   if (typeof document === "undefined") return;
-
-  if (resolved === "dark") {
-    document.documentElement.classList.add("dark");
-  } else {
-    document.documentElement.classList.remove("dark");
+  const el = document.documentElement;
+  const hasDark = el.classList.contains("dark");
+  if (resolved === "dark" && !hasDark) {
+    el.classList.add("dark");
+    el.style.colorScheme = "dark";
+  } else if (resolved === "light" && hasDark) {
+    el.classList.remove("dark");
+    el.style.colorScheme = "light";
   }
 }
 
-/**
- * Theme Provider Component
- *
- * @example
- * ```tsx
- * import { ThemeProvider, presets } from 'shadcn-theme-kit';
- *
- * function App() {
- *   return (
- *     <ThemeProvider theme={presets.blue}>
- *       <MyApp />
- *     </ThemeProvider>
- *   );
- * }
- * ```
- */
+// Sets data-theme attribute — CSS file handles all variable values
+function applyDataTheme(themeName: string): void {
+  if (typeof document === "undefined") return;
+  document.documentElement.setAttribute("data-theme", themeName);
+}
+
 export function ThemeProvider({
   theme,
   themes: themesArray,
   defaultTheme,
   defaultMode = "system",
+  initialMode,
+  initialTheme,
   storageKey,
   children,
 }: ThemeProviderProps): React.ReactElement {
-  // Resolve themes array
   const themes: readonly ThemeConfig[] = useMemo(() => {
-    if (themesArray && themesArray.length > 0) {
-      return themesArray;
-    }
-    if (theme) {
-      return [theme];
-    }
-    // Default to default preset if nothing provided
+    if (themesArray && themesArray.length > 0) return themesArray;
+    if (theme) return [theme];
     return [presets.default];
   }, [theme, themesArray]);
 
-  // Get initial theme
+  const baseStorageKey = useMemo(
+    () => storageKey ?? "shadcn-theme-kit",
+    [storageKey]
+  );
+
   const getInitialTheme = useCallback((): ThemeConfig => {
     const firstTheme = themes[0];
     if (!firstTheme) return presets.default;
-
+    if (initialTheme) {
+      const found = themes.find((t) => t.name === initialTheme);
+      if (found) return found;
+    }
     if (typeof window === "undefined") {
       if (defaultTheme) {
         const found = themes.find((t) => t.name === defaultTheme);
@@ -115,117 +116,106 @@ export function ThemeProvider({
       }
       return firstTheme;
     }
-
-    // Check persisted theme
-    const baseKey = storageKey ?? firstTheme.name;
-    const persistedThemeName = getPersistedTheme(baseKey);
-
+    const persistedThemeName = getPersistedTheme(baseStorageKey);
     if (persistedThemeName) {
       const found = themes.find((t) => t.name === persistedThemeName);
       if (found) return found;
     }
-
     if (defaultTheme) {
       const found = themes.find((t) => t.name === defaultTheme);
       return found ?? firstTheme;
     }
-
     return firstTheme;
-  }, [themes, defaultTheme, storageKey]);
+  }, [themes, defaultTheme, initialTheme, baseStorageKey]);
 
-  // Get initial mode
   const getInitialMode = useCallback((): ThemeMode => {
+    if (initialMode) return initialMode;
     if (typeof window === "undefined") return defaultMode;
-
-    const firstTheme = themes[0];
-    const baseKey = storageKey ?? firstTheme?.name ?? "theme";
-    const persisted = getPersistedMode(baseKey);
-
+    const persisted = getPersistedMode(baseStorageKey);
     return persisted ?? defaultMode;
-  }, [themes, defaultMode, storageKey]);
+  }, [defaultMode, initialMode, baseStorageKey]);
 
-  // State
   const [activeTheme, setActiveTheme] = useState<ThemeConfig>(getInitialTheme);
   const [mode, setModeState] = useState<ThemeMode>(getInitialMode);
-  const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() =>
-    resolveMode(getInitialMode())
-  );
 
-  // Storage key for persistence
-  const baseStorageKey = storageKey ?? activeTheme.name;
+  // Read initial resolvedMode from DOM (set by ThemeScript) — not from React state
+  // This prevents the "light" SSR default from causing a flash
+  const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() => {
+    if (typeof document === "undefined") {
+      const m = initialMode ?? defaultMode;
+      return m === "system" ? "light" : (m as ResolvedMode);
+    }
+    return document.documentElement.classList.contains("dark")
+      ? "dark"
+      : "light";
+  });
 
-  // Set mode handler
+  const isMounted = useRef(false);
+
+  // On first mount: sync React state to DOM (ThemeScript already set it correctly).
+  // Do NOT touch the DOM — only read from it.
+  // On subsequent mode changes: resolve and apply normally.
+  useLayoutEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      const domResolved: ResolvedMode =
+        document.documentElement.classList.contains("dark") ? "dark" : "light";
+      if (domResolved !== resolvedMode) setResolvedMode(domResolved);
+      return;
+    }
+    const resolved = resolveMode(mode);
+    setResolvedMode(resolved);
+    applyDarkClass(resolved);
+  }, [mode]);
+
+  // Apply data-theme attribute when active theme changes
+  useLayoutEffect(() => {
+    applyDataTheme(activeTheme.name);
+  }, [activeTheme]);
+
+  // Listen for system preference changes
+  useEffect(() => {
+    if (mode !== "system" || typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e: MediaQueryListEvent) => {
+      const resolved = e.matches ? "dark" : "light";
+      setResolvedMode(resolved);
+      applyDarkClass(resolved);
+    };
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, [mode]);
+
   const setMode = useCallback(
     (newMode: ThemeMode) => {
       setModeState(newMode);
       setPersistedMode(baseStorageKey, newMode);
+      setThemeCookies(newMode, activeTheme.name, baseStorageKey);
     },
-    [baseStorageKey]
+    [baseStorageKey, activeTheme.name]
   );
 
-  // Toggle mode handler
   const toggleMode = useCallback(() => {
     setModeState((current) => {
       const newMode = current === "light" ? "dark" : "light";
       setPersistedMode(baseStorageKey, newMode);
+      setThemeCookies(newMode, activeTheme.name, baseStorageKey);
       return newMode;
     });
-  }, [baseStorageKey]);
+  }, [baseStorageKey, activeTheme.name]);
 
-  // Set theme handler
   const setTheme = useCallback(
     (themeName: string) => {
       const found = themes.find((t) => t.name === themeName);
       if (found) {
         setActiveTheme(found);
         setPersistedTheme(baseStorageKey, themeName);
+        setThemeCookies(mode, themeName, baseStorageKey);
       }
     },
-    [themes, baseStorageKey]
+    [themes, baseStorageKey, mode]
   );
 
-  // Update resolved mode when mode changes
-  useEffect(() => {
-    const resolved = resolveMode(mode);
-    setResolvedMode(resolved);
-    applyDarkClass(resolved);
-  }, [mode]);
-
-  // Listen for system preference changes
-  useEffect(() => {
-    if (mode !== "system") return;
-    if (typeof window === "undefined") return;
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const handler = (e: MediaQueryListEvent) => {
-      const resolved = e.matches ? "dark" : "light";
-      setResolvedMode(resolved);
-      applyDarkClass(resolved);
-    };
-
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, [mode]);
-
-  // Inject CSS when theme changes
-  useEffect(() => {
-    const css = generateDualModeCSS(activeTheme);
-    injectCSS(css);
-
-    return () => {
-      // Don't remove on cleanup to prevent flash
-    };
-  }, [activeTheme]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      removeCSS();
-    };
-  }, []);
-
-  // Context value
   const contextValue: ThemeContextValue = useMemo(
     () => ({
       mode,

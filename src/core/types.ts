@@ -114,7 +114,11 @@ export type ThemeProviderProps = {
   readonly defaultTheme?: string;
   /** Default mode */
   readonly defaultMode?: ThemeMode;
-  /** Custom storage key (default: theme name + '-mode') */
+  /** Initial mode (use for SSR from cookies) */
+  readonly initialMode?: ThemeMode;
+  /** Initial theme name (use for SSR from cookies) */
+  readonly initialTheme?: string;
+  /** Custom storage key (default: 'shadcn-theme-kit') */
   readonly storageKey?: string;
   /** Children */
   readonly children: React.ReactNode;

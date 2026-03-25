@@ -29,6 +29,7 @@ export {
   validateColorPalette,
   generateThemeCSS,
   generateDualModeCSS,
+  generateGlobalCSS,
 } from "./core";
 
 // Presets
@@ -56,3 +57,6 @@ export {
   useIsDarkMode,
   useAvailableThemes,
 } from "./react";
+
+export { ThemeScript } from "./react/theme-script";
+export { getThemeFromCookies, setThemeCookies } from "./utils/cookies";

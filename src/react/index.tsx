@@ -5,8 +5,6 @@
  * Author: Sohel Rahaman
  */
 
-"use client";
-
 // Context
 export { ThemeContext } from "./context";
 
@@ -22,3 +20,6 @@ export {
   useIsDarkMode,
   useAvailableThemes,
 } from "./hooks";
+
+// Script
+export { ThemeScript } from "./theme-script";

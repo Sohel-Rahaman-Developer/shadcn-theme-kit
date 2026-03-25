@@ -149,3 +149,42 @@ export function removeCSS(): void {
     styleElement.remove();
   }
 }
+
+/**
+ * Generates the complete globals.css CSS block for all provided themes.
+ * Users call this once and paste the output into their globals.css.
+ * This is the ONLY correct way to use shadcn-theme-kit with Tailwind v4 —
+ * all CSS variable values must be in the CSS cascade, not injected by JS.
+ *
+ * Usage in your app:
+ *   import { presets, generateGlobalCSS } from 'shadcn-theme-kit';
+ *   console.log(generateGlobalCSS(Object.values(presets)));
+ *   // paste output into globals.css
+ */
+export function generateGlobalCSS(themes: readonly ThemeConfig[]): string {
+  const blocks: string[] = [];
+
+  for (const theme of themes) {
+    const lightVars = Object.entries(CSS_VAR_MAP)
+      .map(([key, cssVar]) => {
+        const value = theme.light[key as keyof ColorPalette];
+        return value ? `  ${cssVar}: ${escapeCssValue(value)};` : null;
+      })
+      .filter(Boolean)
+      .join("\n");
+
+    const darkVars = Object.entries(CSS_VAR_MAP)
+      .map(([key, cssVar]) => {
+        const value = theme.dark[key as keyof ColorPalette];
+        return value ? `  ${cssVar}: ${escapeCssValue(value)};` : null;
+      })
+      .filter(Boolean)
+      .join("\n");
+
+    blocks.push(
+      `/* ${theme.name} theme */\n[data-theme="${theme.name}"] {\n${lightVars}\n  --radius: ${escapeCssValue(theme.radius)};\n}\n[data-theme="${theme.name}"].dark, [data-theme="${theme.name}"] .dark {\n${darkVars}\n}`
+    );
+  }
+
+  return blocks.join("\n\n");
+}

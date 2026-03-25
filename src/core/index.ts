@@ -33,5 +33,6 @@ export {
   generateDualModeCSS,
   injectCSS,
   removeCSS,
+  generateGlobalCSS,
   STYLE_ELEMENT_ID,
 } from "./css-generator";
