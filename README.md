@@ -375,175 +375,30 @@ export function ThemeSwitcher() {
 
 ---
 
-## Installation
+## 🎨 Adding Custom Themes
 
-```bash
-npm install shadcn-theme-kit
-```
+You can easily create your own brand theme and generate the static CSS for it!
 
----
-
-## Quick Start (3 Steps)
-
-### Step 1: Wrap Your App
+### 1. Define Your Theme
+Create a file for your theme definition.
 
 ```tsx
-// app/layout.tsx (Next.js) or App.tsx (Vite/CRA)
-import { ThemeProvider, presets } from "shadcn-theme-kit";
-
-export default function App() {
-  return (
-    <ThemeProvider theme={presets.blue} defaultMode="system">
-      <YourApp />
-    </ThemeProvider>
-  );
-}
-```
-
-### Step 2: Add Theme Toggle
-
-```tsx
-import { useTheme } from "shadcn-theme-kit";
-
-function ThemeToggle() {
-  const { mode, toggleMode } = useTheme();
-
-  return (
-    <button onClick={toggleMode}>
-      {mode === "dark" ? "☀️ Light" : "🌙 Dark"}
-    </button>
-  );
-}
-```
-
-### Step 3: Use CSS Classes (Works Automatically!)
-
-```tsx
-// These shadcn classes work automatically!
-<div className="bg-background text-foreground">
-  <button className="bg-primary text-primary-foreground">Click me</button>
-</div>
-```
-
----
-
-## Available Preset Themes
-
-Each preset has **BOTH light mode AND dark mode** colors built-in!
-
-| Preset            | Primary Color | Light Mode | Dark Mode |
-| ----------------- | ------------- | ---------- | --------- |
-| `presets.default` | Neutral gray  | ✅         | ✅        |
-| `presets.blue`    | 💙 Blue       | ✅         | ✅        |
-| `presets.rose`    | 💗 Pink/Rose  | ✅         | ✅        |
-| `presets.emerald` | 💚 Green      | ✅         | ✅        |
-| `presets.orange`  | 🧡 Orange     | ✅         | ✅        |
-| `presets.violet`  | 💜 Purple     | ✅         | ✅        |
-| `presets.slate`   | 🩶 Slate gray | ✅         | ✅        |
-
-### Example: Blue Theme
-
-```tsx
-import { ThemeProvider, presets } from "shadcn-theme-kit";
-
-<ThemeProvider theme={presets.blue}>
-  <App />
-</ThemeProvider>;
-
-// When user is in LIGHT mode: #2563eb (bright blue)
-// When user is in DARK mode:  #3b82f6 (lighter blue)
-```
-
----
-
-## Multiple Theme Switcher (Blue/Pink/Green)
-
-Let users switch between different color themes!
-
-```
-┌────────────────────────────────────────────────────────────┐
-│  User Interface                                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │  Theme: [Blue ▼]    Mode: [🌙 Dark]                  │  │
-│  │         │                 │                          │  │
-│  │         ▼                 ▼                          │  │
-│  │    ┌─────────┐      toggleMode()                     │  │
-│  │    │ Blue    │                                       │  │
-│  │    │ Pink    │  ──► setTheme("rose")                 │  │
-│  │    │ Green   │                                       │  │
-│  │    └─────────┘                                       │  │
-│  └──────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────┘
-```
-
-### Code Example
-
-```tsx
-import { ThemeProvider, presets, useTheme } from "shadcn-theme-kit";
-
-function App() {
-  return (
-    <ThemeProvider
-      themes={[presets.blue, presets.rose, presets.emerald]}
-      defaultTheme="blue"
-    >
-      <Header />
-      <YourApp />
-    </ThemeProvider>
-  );
-}
-
-function Header() {
-  const { theme, setTheme, mode, toggleMode } = useTheme();
-
-  return (
-    <div>
-      {/* Theme Color Switcher */}
-      <select value={theme.name} onChange={(e) => setTheme(e.target.value)}>
-        <option value="blue">💙 Blue</option>
-        <option value="rose">💗 Pink</option>
-        <option value="emerald">💚 Green</option>
-      </select>
-
-      {/* Light/Dark Mode Toggle */}
-      <button onClick={toggleMode}>{mode === "dark" ? "☀️" : "🌙"}</button>
-    </div>
-  );
-}
-```
-
----
-
-## Custom Theme
-
-Create your own brand colors!
-
-### File Structure
-
-```
-your-project/
-├── lib/
-│   └── theme.ts        ◄── Create this file
-├── app/
-│   └── layout.tsx      ◄── Import theme here
-└── components/
-    └── theme-toggle.tsx
-```
-
-### theme.ts
-
-```tsx
+// lib/my-brand-theme.ts
 import { createTheme } from "shadcn-theme-kit";
 
 export const myBrandTheme = createTheme({
-  name: "my-brand", // Used for localStorage key
+  name: "my-brand", // Used for [data-theme="my-brand"]
 
-  // 🌞 LIGHT MODE COLORS
   light: {
     background: "#ffffff",
     foreground: "#0a0a0a",
-    primary: "#0066cc", // Your brand color
+    primary: "#0066cc", // Brand color
     primaryForeground: "#ffffff",
+    // ... complete all required color keys
+    card: "#ffffff",
+    cardForeground: "#0a0a0a",
+    popover: "#ffffff",
+    popoverForeground: "#0a0a0a",
     secondary: "#f5f5f5",
     secondaryForeground: "#171717",
     muted: "#f5f5f5",
@@ -552,21 +407,20 @@ export const myBrandTheme = createTheme({
     accentForeground: "#171717",
     destructive: "#ef4444",
     destructiveForeground: "#fafafa",
-    card: "#ffffff",
-    cardForeground: "#0a0a0a",
-    popover: "#ffffff",
-    popoverForeground: "#0a0a0a",
     border: "#e5e5e5",
     input: "#e5e5e5",
     ring: "#0066cc",
   },
-
-  // 🌙 DARK MODE COLORS
   dark: {
     background: "#0a0a0a",
     foreground: "#fafafa",
     primary: "#3399ff", // Lighter for dark mode
     primaryForeground: "#0a0a0a",
+    // ... complete all required color keys
+    card: "#0a0a0a",
+    cardForeground: "#fafafa",
+    popover: "#0a0a0a",
+    popoverForeground: "#fafafa",
     secondary: "#262626",
     secondaryForeground: "#fafafa",
     muted: "#262626",
@@ -575,30 +429,44 @@ export const myBrandTheme = createTheme({
     accentForeground: "#fafafa",
     destructive: "#dc2626",
     destructiveForeground: "#fafafa",
-    card: "#0a0a0a",
-    cardForeground: "#fafafa",
-    popover: "#0a0a0a",
-    popoverForeground: "#fafafa",
     border: "#262626",
     input: "#262626",
     ring: "#3399ff",
   },
+  radius: "0.5rem"
 });
 ```
 
-### layout.tsx
+### 2. Generate and Paste the CSS
+
+Run the generator for your custom theme:
+
+```ts
+import { generateGlobalCSS } from 'shadcn-theme-kit';
+import { myBrandTheme } from './lib/my-brand-theme';
+
+console.log(generateGlobalCSS([myBrandTheme]));
+```
+
+Paste the output `[data-theme="my-brand"] { ... }` into your `globals.css` base layer.
+
+### 3. Provide to the App
+
+Pass your custom theme to the provider (and don't forget the built-in presets if you still want them).
 
 ```tsx
-import { ThemeProvider } from "shadcn-theme-kit";
-import { myBrandTheme } from "@/lib/theme";
+// app/providers.tsx
+import { ThemeProvider, presets } from "shadcn-theme-kit";
+import { myBrandTheme } from "@/lib/my-brand-theme";
 
-export default function RootLayout({ children }) {
+export function Providers({ children }) {
   return (
-    <html>
-      <body>
-        <ThemeProvider theme={myBrandTheme}>{children}</ThemeProvider>
-      </body>
-    </html>
+    <ThemeProvider 
+      themes={[...Object.values(presets), myBrandTheme]}
+      defaultTheme="my-brand"
+    >
+      {children}
+    </ThemeProvider>
   );
 }
 ```
@@ -615,7 +483,7 @@ export default function RootLayout({ children }) {
 | `themes`       | `ThemeConfig[]`                 | -           | Multiple themes for switching |
 | `defaultTheme` | `string`                        | First theme | Default active theme name     |
 | `defaultMode`  | `'light' \| 'dark' \| 'system'` | `'system'`  | Default color mode            |
-| `storageKey`   | `string`                        | Theme name  | localStorage key prefix       |
+| `storageKey`   | `string`                        | kit default | localStorage key prefix       |
 
 ### `useTheme()`
 
@@ -631,54 +499,6 @@ const {
 } = useTheme();
 ```
 
-### Other Hooks
-
-| Hook                   | Returns             | Description          |
-| ---------------------- | ------------------- | -------------------- |
-| `useThemeMode()`       | `ThemeMode`         | Current mode setting |
-| `useResolvedMode()`    | `'light' \| 'dark'` | Actual applied mode  |
-| `useIsDarkMode()`      | `boolean`           | Is dark mode active  |
-| `useCurrentTheme()`    | `ThemeConfig`       | Current theme config |
-| `useAvailableThemes()` | `ThemeConfig[]`     | All themes array     |
-
----
-
-## Supported Color Formats
-
-All these formats work:
-
-```tsx
-createTheme({
-  light: {
-    primary: "#2563eb", // HEX
-    secondary: "rgb(100, 116, 139)", // RGB
-    accent: "rgba(245, 158, 11, 1)", // RGBA
-    background: "hsl(0, 0%, 100%)", // HSL
-    foreground: "black", // Color name
-  },
-});
-```
-
----
-
-## Next.js App Router Setup
-
-```tsx
-// app/layout.tsx
-import { ThemeProvider, presets } from "shadcn-theme-kit";
-
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>
-        <ThemeProvider theme={presets.blue} defaultMode="system">
-          {children}
-        </ThemeProvider>
-      </body>
-    </html>
-  );
-}
-```
 
 ---
 
